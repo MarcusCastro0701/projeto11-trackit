@@ -39,7 +39,7 @@ const Fundo= styled.div`
     }
     p{
         text-decoration: underline;
-        font-family: 'Roboto';
+        font-family: 'Lexend Deca';
         color: #52B6FF
         
     }
@@ -74,10 +74,11 @@ const Form = styled.form`
         ::placeholder,
         ::-webkit-input-placeholder {
         color: #DBDBDB;
-        font-family: 'Roboto';
+        font-family: 'Lexend Deca';
         }
     }
     button{
+        font-family: 'Lexend Deca';
         width: 100%;
         height: 50px;
         font-size: 150%;
