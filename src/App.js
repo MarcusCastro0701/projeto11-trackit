@@ -4,6 +4,7 @@ import { useEffect, useState } from "react"
 import Login from "./Login"
 import Cadastro from "./Cadastro"
 import Habitos from "./Habitos"
+import Hoje from "./Hoje"
 
 
 
@@ -12,10 +13,17 @@ import Habitos from "./Habitos"
 export default function App(){
 
     return(
-        <div>
+        <BrowserRouter>
+
             <GlobalStyle/>
-            <Habitos/>
-        </div>
+
+            <Routes>
+                <Route path="/" element={<Login/>}/>
+                <Route path="/cadastro" element={<Cadastro/>}/>
+                <Route path="/habitos" element={<Habitos/>}/>
+            </Routes>
+
+        </BrowserRouter>
     )
 
 }

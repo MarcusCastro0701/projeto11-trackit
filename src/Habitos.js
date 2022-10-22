@@ -3,8 +3,14 @@ import axios from "axios"
 import styled from "styled-components";
 import bob from "./assets/bob.png"
 import Trackit from "./assets/TrackIt.png"
+import trash from "./assets/trash.svg"
 
 export default function Habitos(){
+
+    const letras = ["D", "S", "T", "Q", "Q", "S", "D"];
+
+
+
 
     return (
         <Fundo>
@@ -37,6 +43,16 @@ export default function Habitos(){
                 </Espaçobotoes>
             </Add>
 
+            <Habitoadicionado>
+                <Topohabitos>
+                    Suposto hábito
+                    <ion-icon name="trash-outline"></ion-icon>
+                </Topohabitos>
+                <Espaçodias>
+                    {letras.map((fator) => <button>{fator}</button>)}
+                </Espaçodias>
+            </Habitoadicionado>
+
             <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>
 
             <Baixo>
@@ -52,11 +68,11 @@ export default function Habitos(){
 }
 
 const Fundo = styled.div`
+    box-sizing: border-box;
     padding: 92px 0 70px 0;
     width: 100%;
     height: 667px;
-    position: relative;
-    z-index: 0;
+    z-index: 1000000000000;
     background-color: #dbdbdb;
     border: none;
     display: flex;
@@ -178,7 +194,7 @@ const Add = styled.div`
     border-radius: 5px;
     width: 90%;
     background-color: #FFFFFF;
-    display: flex;
+    display: none;
     padding: 15px 0 15px 19px;
     flex-direction: column;
     input{
@@ -198,6 +214,7 @@ const Add = styled.div`
     }
 `
 const Espaçodias = styled.div`
+    
     width: 234px;
     display: flex;
     flex-direction: row;
@@ -211,6 +228,13 @@ const Espaçodias = styled.div`
         border: 1px solid #DBDBDB;
         background-color: #FFFFFF;
         color: #DBDBDB; 
+    }
+    img{
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        top: 100px;
+        left: 50px;
     }
 `
 const Espaçobotoes = styled.div`
@@ -242,8 +266,28 @@ const Espaçobotoes = styled.div`
     
     }
 `
-
-
+const Habitoadicionado = styled.div`
+    padding: 17px 3%; 17px 5%;
+    border-radius: 5px;
+    width: 90%;
+    height:70px;
+    background-color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    
+`
+const Topohabitos = styled.div`
+    width: 100%;
+    display: flex;
+    flex direction: row;
+    justify-content: space-between;
+    font-family: 'Lexend Deca';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 22.976px;
+    color: grey;
+`
 
 
 const Teste = styled.div`

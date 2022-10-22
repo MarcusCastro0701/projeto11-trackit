@@ -1,21 +1,53 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import foto from "./assets/foto.png"
+import { Link, useNavigate } from 'react-router-dom';
 
 
 
 export default function Login(){
 
+    const [form, setForm] = useState({ email: "", password: ""})
+    const [boolButton, setBoolButton] = useState(false)
+    const navigate = useNavigate();
+
+    function handleForm(e) {
+        const {name, value} = e.target
+        setForm({...form, [name]: value})
+      }
+
+      function fazerLogin(event) {
+        event.preventDefault();
+        setBoolButton(true)
+        const URL = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/login"
+        const body = form
+    
+        const promise = axios.post(URL, body)
+    
+        promise.then((res) => {
+          console.log("Logou!")
+          navigate("/habitos")
+        })
+    
+        promise.catch((err) => {
+          alert(err.response.data.message)
+        })
+      }
+
+
+
     return(
         <Fundo>
             <img src={foto}/>
-            <Form>
-                <input required type="email" placeholder="email"></input>
-                <input required type="password" placeholder="password"></input>
-                <button>Entrar</button>
+            <Form onSubmit={fazerLogin}>
+                <input onChange ={handleForm} name="email" required type="email" placeholder="email"></input>
+                <input onChange ={handleForm} name="password" required type="password" placeholder="password"></input>
+                <button disabled={boolButton} type="submit" >
+                    {(boolButton === false) ? "Cadastrar" : <DotWrapper> <Dot delay="0s" /> <Dot delay=".1s" /> <Dot delay=".2s" /> </DotWrapper>}            
+                </button>
             </Form>
-            <p>Ainda não tem uma conta? Cadastre-se!</p>
+            <Link to={`/cadastro`}> <p>Ainda não tem uma conta? Cadastre-se!</p> </Link>
         </Fundo>
     )
 
@@ -87,5 +119,30 @@ const Form = styled.form`
         border-radius: 5px;
         color: #ffffff;
         margin-bottom: 25px;
+        &:disabled{
+            color: #52B6FF;
+        }
     }
 `
+const BounceAnimation = keyframes`
+  0% { margin-bottom: 0; }
+  50% { margin-bottom: 15px }
+  100% { margin-bottom: 0 }
+`;
+const DotWrapper = styled.div`
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+`;
+const Dot = styled.div`
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  margin: 0 5px;
+  /* Animation */
+  animation: ${BounceAnimation} 0.5s linear infinite;
+  animation-delay: ${props => props.delay};
+`;

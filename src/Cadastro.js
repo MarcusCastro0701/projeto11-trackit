@@ -1,23 +1,54 @@
 import { useEffect, useState } from "react"
 import axios from "axios"
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import foto from "./assets/foto.png"
-
+import { Link, useNavigate} from 'react-router-dom';
 
 
 export default function Cadastro(){
 
+    const [form, setForm] = useState({ email: "", name: "", image: "", password: "" })
+    const [boolButton, setBoolButton] = useState(false)
+    const navigate = useNavigate();
+
+    function handleForm(e) {
+        e.preventDefault();
+        const {name, value} = e.target
+        setForm({...form, [name]: value})
+      }
+
+      function createAccount(event) {
+        event.preventDefault();
+        setBoolButton(true)
+        const URL = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/sign-up"
+        const body = form
+        console.log(form, body)
+        const promise = axios.post(URL, body)
+    
+        promise.then((res) => {
+          console.log("Tamo junto!")
+          navigate("/")
+        })
+    
+        promise.catch((err) => {
+          alert(err.response.data.message)
+        })
+      }
+
+
     return(
         <Fundo>
             <img src={foto}/>
-            <Form>
-                <input required type="email" placeholder="email"></input>
-                <input required type="password" placeholder="password"></input>
-                <input required type="name" placeholder="nome"></input>
-                <input required type="url" placeholder="foto"></input>
-                <button>Cadastrar</button>
+            <Form onSubmit={createAccount}>
+                <input onChange={handleForm} name="email" required type="email" placeholder="email"></input>
+                <input onChange={handleForm} name="password" required type="password" placeholder="password"></input>
+                <input onChange={handleForm} name="name" required type="text" placeholder="nome"></input>
+                <input onChange={handleForm} name="image" required type="url" placeholder="foto"></input>
+                <button disabled={boolButton} type="submit" >
+                    {(boolButton === false) ? "Cadastrar" : <DotWrapper> <Dot delay="0s" /> <Dot delay=".1s" /> <Dot delay=".2s" /> </DotWrapper>}            
+                </button>
             </Form>
-            <p>Já tem uma conta? Faça login!</p>
+            <Link to={`/`}><p>Já tem uma conta? Faça login!</p></Link>
         </Fundo>
     )
 
@@ -89,5 +120,30 @@ const Form = styled.form`
         border-radius: 5px;
         color: #ffffff;
         margin-bottom: 25px;
+        &:disabled{
+            color: #52B6FF;
+        }
     }
 `
+const BounceAnimation = keyframes`
+  0% { margin-bottom: 0; }
+  50% { margin-bottom: 15px }
+  100% { margin-bottom: 0 }
+`;
+const DotWrapper = styled.div`
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+`;
+const Dot = styled.div`
+  background-color: #FFFFFF;
+  border-radius: 50%;
+  width: 10px;
+  height: 10px;
+  margin: 0 5px;
+  /* Animation */
+  animation: ${BounceAnimation} 0.5s linear infinite;
+  animation-delay: ${props => props.delay};
+`;
