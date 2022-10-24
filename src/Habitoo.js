@@ -71,8 +71,6 @@ export default function Habitoo(props){
 
             promise.then((resposta) => {
                 
-                
-                
                 console.log("Post uncheck feito!")
 
                 const link = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today"
