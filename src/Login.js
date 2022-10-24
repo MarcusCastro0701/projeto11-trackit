@@ -6,45 +6,50 @@ import { Link, useNavigate } from 'react-router-dom';
 
 
 
-export default function Login(){
+export default function Login(props) {
 
-    const [form, setForm] = useState({ email: "", password: ""})
+    const [form, setForm] = useState({ email: "", password: "" })
     const [boolButton, setBoolButton] = useState(false)
     const navigate = useNavigate();
 
     function handleForm(e) {
-        const {name, value} = e.target
-        setForm({...form, [name]: value})
-      }
+        const { name, value } = e.target
+        setForm({ ...form, [name]: value })
+    }
 
-      function fazerLogin(event) {
+    function fazerLogin(event) {
         event.preventDefault();
         setBoolButton(true)
         const URL = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/login"
         const body = form
-    
+
         const promise = axios.post(URL, body)
-    
+
         promise.then((res) => {
-          console.log("Logou!")
-          navigate("/habitos")
+
+            props.settokenlogin(res.data.token)
+            props.setimg(res.data.image)
+            console.log(res.data.image)
+            console.log("Logou")
+            navigate("/habitos")
         })
-    
+
         promise.catch((err) => {
-          alert(err.response.data.message)
+            alert(err.response.data.message)
+            setBoolButton(false)
         })
-      }
+    }
 
 
 
-    return(
+    return (
         <Fundo>
-            <img src={foto}/>
+            <img src={foto} />
             <Form onSubmit={fazerLogin}>
-                <input onChange ={handleForm} name="email" required type="email" placeholder="email"></input>
-                <input onChange ={handleForm} name="password" required type="password" placeholder="password"></input>
+                <input onChange={handleForm} name="email" required type="email" placeholder="email"></input>
+                <input onChange={handleForm} name="password" required type="password" placeholder="password"></input>
                 <button disabled={boolButton} type="submit" >
-                    {(boolButton === false) ? "Cadastrar" : <DotWrapper> <Dot delay="0s" /> <Dot delay=".1s" /> <Dot delay=".2s" /> </DotWrapper>}            
+                    {(boolButton === false) ? "Logar" : <DotWrapper> <Dot delay="0s" /> <Dot delay=".1s" /> <Dot delay=".2s" /> </DotWrapper>}
                 </button>
             </Form>
             <Link to={`/cadastro`}> <p>Ainda não tem uma conta? Cadastre-se!</p> </Link>
@@ -55,7 +60,7 @@ export default function Login(){
 
 
 const Fundo= styled.div`
-    margin-top: 125px;;
+    
     width: 100%;
     height: 667px;
     position: relative;
@@ -66,6 +71,7 @@ const Fundo= styled.div`
     flex-direction: column;
     align-items: center;
     img{
+        margin-top: 125px;
         width: 180px;
         height: 178.38px;
     }

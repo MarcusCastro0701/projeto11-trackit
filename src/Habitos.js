@@ -4,76 +4,181 @@ import styled from "styled-components";
 import bob from "./assets/bob.png"
 import Trackit from "./assets/TrackIt.png"
 import trash from "./assets/trash.svg"
-
-export default function Habitos(){
-
-    const letras = ["D", "S", "T", "Q", "Q", "S", "D"];
-
-
+import Dias from "./Dias"
+import { Link, useNavigate } from 'react-router-dom';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 
+export default function Habitos(props){
+
+    const [letras, setLetras] = useState([
+        {dia: "D", id: 0, selected: false},
+        {dia: "S", id: 1, selected: false},
+        {dia: "T", id: 2, selected: false},
+        {dia: "Q", id: 3, selected: false},
+        {dia: "Q", id: 4, selected: false},
+        {dia: "S", id: 5, selected: false},
+        {dia: "S", id: 6, selected: false},
+        
+    ])
+
+    const [boolAddHabito, setBoolAddHabito] = useState(false)
+    const [idHabito, setIdHabito] = useState('')
+    const navigate = useNavigate();
+
+    function mudaTela(){
+        navigate("/hoje")
+    }
+    
+    useEffect(() => {
+
+        const URL = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits"
+        
+        const config = {
+            headers: {
+                Authorization: `Bearer ${props.tokenlogin}`
+            }
+        }
+		const requisicao = axios.get(URL, config);
+        
+
+		requisicao.then((resposta) => {
+			
+            props.sethabits(resposta.data)
+            console.log("Get feito!")
+            
+		});
+
+        requisicao.catch((erro) => {
+            console.log("deu erro!")
+        })
+
+	}, []);
+
+    function deleta(id) {
+
+
+        console.log(id)
+        const URL = `https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${id}`
+        const config = {
+            headers: {
+                Authorization: `Bearer ${props.tokenlogin}`
+            }
+        }
+        const requisicao = axios.delete(URL, config);
+
+        requisicao.then((resposta) => {
+
+            console.log("Hábito deletado!")
+
+            const link = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits"
+
+            const configuracao = {
+                headers: {
+                    Authorization: `Bearer ${props.tokenlogin}`
+                }
+            }
+            const requisicao = axios.get(link, configuracao);
+
+
+            requisicao.then((resposta) => {
+
+                props.sethabits(resposta.data)
+                console.log("Get feito após deleção!")
+
+            });
+
+            requisicao.catch((erro) => {
+                console.log("deu erro ao fazer o get pós deleção!")
+            })
+
+
+        });
+
+        requisicao.catch((erro) => {
+            console.log("Erro ao deletar hábito!")
+            alert(erro.response.data.message)
+            console.log(erro.response.data.message)
+        })
+
+    }
+
+
+
+    console.log(props.habits)
     return (
         <Fundo>
 
             <Topo>
                 <Logo src={Trackit} />
-                <Imgperfil src={bob} />
+                <Imgperfil src={props.img} />
             </Topo>
             
             <Title>
                 <p> Meus Hábitos </p>
-                <button> + </button>
+                <button onClick={() => setBoolAddHabito(true)}> + </button>
             </Title>
+            {(boolAddHabito === false) ? "" : <Dias sethabits={props.sethabits} tokenlogin={props.tokenlogin} setbooladdhabito={setBoolAddHabito}/>}
 
-            <Add>
-                <input placeholder="nome do hábito"></input>
-                <Espaçodias>
-                    <button>D</button>
-                    <button>S</button>
-                    <button>T</button>
-                    <button>Q</button>
-                    <button>Q</button>
-                    <button>S</button>
-                    <button>S</button>
-                </Espaçodias>
+            {(props.habits[0] === undefined ? <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p> :
+                props.habits.map((fator) =>
 
-                <Espaçobotoes>
-                    <p>Cancelar</p>
-                    <button>Salvar</button>
-                </Espaçobotoes>
-            </Add>
-
-            <Habitoadicionado>
-                <Topohabitos>
-                    Suposto hábito
-                    <ion-icon name="trash-outline"></ion-icon>
-                </Topohabitos>
-                <Espaçodias>
-                    {letras.map((fator) => <button>{fator}</button>)}
-                </Espaçodias>
-            </Habitoadicionado>
-
-            <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>
+                    <Habitoadicionado>
+                        <Topohabitos>
+                            {fator.name}
+                            <ion-icon onClick={() => deleta(fator.id)} name="trash-outline"></ion-icon>
+                        </Topohabitos>
+                        <Espaçodias2>
+                            {letras.map((factor) => <Botao marcado={fator.days.includes(factor.id)}>{factor.dia}</Botao>)}
+                        </Espaçodias2>
+                    </Habitoadicionado>
+                )
+            )}
+            
 
             <Baixo>
+                
                 <p>Hábitos</p>
                 <p>Histórico</p>
             </Baixo>
+            
+            <Progresso >
+                <p>Hoje</p>
+            </Progresso>
 
-            <Progresso> <p>Hoje</p> </Progresso>
+            <Bar onClick={mudaTela}>
+                <CircularProgressbar  value={0} 
+                styles={buildStyles({
+                    pathColor: `#FFFFFF`,
+                    trailColor: '#52B6FF',
+                    backgroundColor: '#3e98c7',
+                  })}
+                />
+            </Bar>
 
         </Fundo>
     )
+    
 
 }
+
+const Bar = styled.div`
+    position: fixed;
+    z-index: 500;
+    bottom: 13px;
+    left: 40.2%;
+    width: 85px;
+    height: 85px;
+`
 
 const Fundo = styled.div`
     box-sizing: border-box;
     padding: 92px 0 70px 0;
     width: 100%;
-    height: 667px;
+    
     z-index: 1000000000000;
-    background-color: #dbdbdb;
+    
     border: none;
     display: flex;
     align-items: center;
@@ -90,7 +195,7 @@ const Fundo = styled.div`
     }
     `
 const Topo = styled.div`
-        
+        z-index: 5000000;
         display: flex;
         flex-direction: row;
         justify-content: space-between;
@@ -156,6 +261,8 @@ const Progresso = styled.div`
         color: #FFFFFF;
     }
 `
+
+
 const Title = styled.div`
     width: 100%;
     height: 35px;
@@ -194,7 +301,7 @@ const Add = styled.div`
     border-radius: 5px;
     width: 90%;
     background-color: #FFFFFF;
-    display: none;
+    display: flex;
     padding: 15px 0 15px 19px;
     flex-direction: column;
     input{
@@ -213,30 +320,7 @@ const Add = styled.div`
         }
     }
 `
-const Espaçodias = styled.div`
-    
-    width: 234px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    button{
-        width: 31px;
-        height: 31px;
-        font-family: 'Lexend Deca';
-        border-radius: 5px;
-        border: 1px solid #DBDBDB;
-        background-color: #FFFFFF;
-        color: #DBDBDB; 
-    }
-    img{
-        position: fixed;
-        width: 10px;
-        height: 10px;
-        top: 100px;
-        left: 50px;
-    }
-`
+
 const Espaçobotoes = styled.div`
     margin-top: 10%;
     width: 90%;
@@ -266,7 +350,35 @@ const Espaçobotoes = styled.div`
     
     }
 `
+const Espaçodias2 = styled.div`
+    
+    width: 234px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    img{
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        top: 100px;
+        left: 50px;
+    }
+`
+
+const Botao = styled.button`
+    width: 31px;
+    height: 31px;
+    font-family: 'Lexend Deca';
+    border-radius: 5px;
+    border: 1px solid #DBDBDB;
+    background-color: ${props => props.marcado ? `#DBDBDB` : `#FFFFFF`};
+    color: ${props => props.marcado ? `#FFFFFF` : `#DBDBDB`}; 
+    
+`
+
 const Habitoadicionado = styled.div`
+    margin-bottom: 8px;
     padding: 17px 3%; 17px 5%;
     border-radius: 5px;
     width: 90%;
@@ -278,6 +390,7 @@ const Habitoadicionado = styled.div`
     
 `
 const Topohabitos = styled.div`
+    z-index: 0;
     width: 100%;
     display: flex;
     flex direction: row;

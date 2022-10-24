@@ -3,11 +3,72 @@ import axios from "axios"
 import styled from "styled-components";
 import bob from "./assets/bob.png"
 import Trackit from "./assets/TrackIt.png"
+import dayjs from 'dayjs'
+import locale from "../node_modules/dayjs/locale/pt-br"
+import Habitoo from "./Habitoo"
+import { Link, useNavigate } from 'react-router-dom';
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+
+
+var customParseFormat = require('dayjs/plugin/customParseFormat')
+dayjs.extend(customParseFormat)
 
 
 
+export default function Hoje(props){
+    
+    require('dayjs/locale/pt-br')
+    let today = dayjs().locale('pt-br').format('dddd, DD/MM')
 
-export default function Hoje(){
+    const [boolCount, setBoolCount] = useState(false)
+
+    const c = (100 / props.habitshoje.length)
+    const porcentagem = c * props.arrdone.length
+    const arredondado = Math.round(porcentagem)
+    console.log(props.arrdone.length, c, arredondado, "tela /hoje")
+
+
+    const navigate = useNavigate();
+
+    function mudaTela(){
+        navigate("/habitos")
+    }
+
+    useEffect(() => {
+
+        const URL = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today"
+        
+        const config = {
+            headers: {
+                Authorization: `Bearer ${props.tokenlogin}`
+            }
+        }
+		const requisicao = axios.get(URL, config);
+        
+
+		requisicao.then((resposta) => {
+
+            if(props.arrdone.length > 0){
+                setBoolCount(true)
+            }
+            const filteredArr = resposta.data.filter((s) => (s.done === true));
+            console.log(filteredArr, "array de dones filtrada")
+            props.setarrdone(filteredArr);
+
+			console.log(resposta, "resposta get /hoje")
+            props.sethabitshoje(resposta.data)
+            console.log("Get hoje feito!")
+            
+		});
+
+        requisicao.catch((erro) => {
+            console.log("deu erro no get hoje!")
+        })
+
+	}, []);
+
+    
 
     return(
 
@@ -15,77 +76,66 @@ export default function Hoje(){
 
             <Topo>
                 <Logo src={Trackit} />
-                <Imgperfil src={bob} />
+                <Imgperfil src={props.img} />
             </Topo>
 
-            <Title>
-            Quinta, 20/20
-            <p>Nenhum hábito concluído ainda</p>
+            <Title tamanhoarrdone={props.arrdone.length}>
+            {today}
+            {(props.arrdone.length > 0) ? <p>{arredondado}% dos hábidos concluídos</p> : <p>Nenhum hábito concluído ainda</p>} 
             </Title>
 
-            <Habito>
-                <Englobainfos>
-                    <Nomehabito>Ler 1 capítulo de livro</Nomehabito>
-                    <Infosequencia>Sequencia atual: 1 dia</Infosequencia>
-                    <Infosequencia>Seu recorde: 3 dias</Infosequencia>
-                </Englobainfos>
-
-                <ion-icon name="checkbox"></ion-icon>
-            </Habito>
-
-            <Habito>
-                <Englobainfos>
-                    <Nomehabito>Ler 1 capítulo de livro</Nomehabito>
-                    <Infosequencia>Sequencia atual: 1 dia</Infosequencia>
-                    <Infosequencia>Seu recorde: 3 dias</Infosequencia>
-                </Englobainfos>
-
-                <ion-icon name="checkbox"></ion-icon>
-            </Habito>
-
-            <Habito>
-                <Englobainfos>
-                    <Nomehabito>Ler 1 capítulo de livro</Nomehabito>
-                    <Infosequencia>Sequencia atual: 1 dia</Infosequencia>
-                    <Infosequencia>Seu recorde: 3 dias</Infosequencia>
-                </Englobainfos>
-
-                <ion-icon name="checkbox"></ion-icon>
-            </Habito>
-
-            
+            {props.habitshoje.map((fator) => <Habitoo setboolcount={setBoolCount} setarrdone={props.setarrdone} sethabitshoje={props.sethabitshoje} tokenlogin={props.tokenlogin} fator={fator}/>)}
             
             <Baixo>
-                <p>Hábitos</p>
+                <p onClick={mudaTela} >Hábitos</p>
                 <p>Histórico</p>
             </Baixo>
 
             <Progresso> <p>Hoje</p> </Progresso>
 
+            <Bar>
+                <CircularProgressbar value={arredondado} 
+                styles={buildStyles({
+                    pathColor: `#FFFFFF`,
+                    trailColor: '#52B6FF',
+                    backgroundColor: '#3e98c7',
+                  })}
+                />
+            </Bar>
+
         </Fundo>
 
     )
+
+    
 
 }
 
 
 
-
+const Bar = styled.div`
+    position: fixed;
+    z-index: 500;
+    bottom: 13px;
+    left: 40.2%;
+    width: 85px;
+    height: 85px;
+`
 
 const Fundo = styled.div`
     padding: 92px 0 100% 0;
     width: 100%;
-    height: 100vw;
+    
     
     position: relative;
     z-index: 0;
-    background-color: #dbdbdb;
+    
     border: none;
     display: flex;
     flex-direction: column;
     `
 const Topo = styled.div`
-        
+        z-index: 10000;
         display: flex;
         flex-direction: row;
         justify-content: space-between;
@@ -169,7 +219,7 @@ const Title = styled.div`
         font-weight: 400;
         font-size: 17.976px;
         line-height: 22px;
-        color: #BABABA;
+        color: ${props => props.tamanhoarrdone > 0 ? (`#8FC549`) : (`#BABABA`)};
     }
 
      button{

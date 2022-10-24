@@ -32,6 +32,7 @@ export default function Cadastro(){
     
         promise.catch((err) => {
           alert(err.response.data.message)
+          setBoolButton(false)
         })
       }
 
@@ -56,7 +57,7 @@ export default function Cadastro(){
 
 
 const Fundo= styled.div`
-    margin-top: 100px;
+    
     width: 100%;
     height: 667px;
     position: relative;
@@ -69,6 +70,7 @@ const Fundo= styled.div`
     img{
         width: 180px;
         height: 178.38px;
+        margin-top: 100px;
     }
     p{
         text-decoration: underline;
