@@ -72,8 +72,6 @@ export default function Habitoo(props){
             promise.then((resposta) => {
                 
                 
-                const c = props.count -1 
-                props.setcount(c)
                 
                 console.log("Post uncheck feito!")
 
