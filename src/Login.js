@@ -46,8 +46,8 @@ export default function Login(props) {
         <Fundo>
             <img src={foto} />
             <Form onSubmit={fazerLogin}>
-                <input onChange={handleForm} name="email" required type="email" placeholder="email"></input>
-                <input onChange={handleForm} name="password" required type="password" placeholder="password"></input>
+                <input disabled={boolButton} onChange={handleForm} name="email" required type="email" placeholder="email"></input>
+                <input disabled={boolButton} onChange={handleForm} name="password" required type="password" placeholder="password"></input>
                 <button disabled={boolButton} type="submit" >
                     {(boolButton === false) ? "Logar" : <DotWrapper> <Dot delay="0s" /> <Dot delay=".1s" /> <Dot delay=".2s" /> </DotWrapper>}
                 </button>

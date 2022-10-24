@@ -47,8 +47,6 @@ export default function Dias(props){
             
         }
 
-        
-        
         return(
             <Botao  selecionado = {props.fator.selected} onClick={handleId}>{props.fator.dia}</Botao>
         )
