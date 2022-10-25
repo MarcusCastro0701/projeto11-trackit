@@ -104,6 +104,12 @@ export default function Habitos(props){
 
     }
 
+    function testeDeleta(fator){
+        const confirma = window.confirm("deseja mesmo deletar o hábito?")
+        if(confirma === true){
+            deleta(fator)
+        }
+    }
 
 
     console.log(props.habits)
@@ -127,7 +133,7 @@ export default function Habitos(props){
                     <Habitoadicionado>
                         <Topohabitos>
                             {fator.name}
-                            <ion-icon onClick={() => deleta(fator.id)} name="trash-outline"></ion-icon>
+                            <ion-icon onClick={() => testeDeleta(fator.id)} name="trash-outline"></ion-icon>
                         </Topohabitos>
                         <Espaçodias2>
                             {letras.map((factor) => <Botao marcado={fator.days.includes(factor.id)}>{factor.dia}</Botao>)}
